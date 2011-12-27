@@ -123,26 +123,23 @@ public class XYChartBuilder extends Activity {
         mRenderer.setYAxisMin(ys-5);
         mRenderer.setYAxisMax(yg+5);
         mRenderer.setShowGrid(true);
-        //mRenderer.setInitialRange(new double[]{30,30});
     }
-    
-    //code for New Series
-//    mNewSeries = (Button) findViewById(R.id.new_series);
-//    mNewSeries.setOnClickListener(new View.OnClickListener() {
-//      public void onClick(View v) {
-//        String seriesTitle = "Series " + (mDataset.getSeriesCount() + 1);
-//        XYSeries series = new XYSeries(seriesTitle);
-//        mDataset.addSeries(series);
-//        mCurrentSeries = series;
-//        XYSeriesRenderer renderer = new XYSeriesRenderer();
-//        mRenderer.addSeriesRenderer(renderer);
-//        renderer.setPointStyle(PointStyle.CIRCLE);
-//        renderer.setFillPoints(true);
-//        mCurrentRenderer = renderer;
-//        setSeriesEnabled(true);
-//      }
-//    });
-    
+    //code for the path the user traverses
+    {
+        String seriesTitle = "Your Path";
+        XYSeries series = new XYSeries(seriesTitle);
+        mDataset.addSeries(series);
+        mCurrentSeries = series;
+        XYSeriesRenderer renderer = new XYSeriesRenderer();
+        mRenderer.addSeriesRenderer(renderer);
+        renderer.setPointStyle(PointStyle.TRIANGLE);
+        renderer.setColor(Color.GREEN);
+        renderer.setFillPoints(true);
+        mCurrentRenderer = renderer;
+        
+        mCurrentSeries.add(0, 0);
+        mCurrentSeries.add(0, 0);
+    }    
     
     mThread.start();
 
@@ -215,6 +212,18 @@ public class XYChartBuilder extends Activity {
     } else {
       mChartView.repaint();
     }
+  }
+  public void dynamicUpdate(int i){
+	  //Dipak and Bhumil's part to be added here.
+	  XYSeries temp =  mDataset.getSeriesAt(1);
+      XYSeries series = new XYSeries("Your Current Traversing Path");
+      series.add(temp.getX(0), temp.getX(0));
+	  series.add(i, i);
+	  mDataset.removeSeries(1);
+	  mDataset.addSeries(1, series);
+	  
+	  if(mChartView!= null)
+		  mChartView.repaint();
   }
   public void saveAsImage(){
       Bitmap bitmap = mChartView.toBitmap();

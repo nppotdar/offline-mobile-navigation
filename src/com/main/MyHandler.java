@@ -8,7 +8,7 @@ import com.graph.XYChartBuilder;
 public class MyHandler extends Handler 
 { 
 	XYChartBuilder xyActivity;
-    
+    int i =0;
 	public MyHandler(XYChartBuilder xyActivity)
 	{	
         super();
@@ -17,6 +17,10 @@ public class MyHandler extends Handler
     
     public void handleMessage(Message msg) 
     { 
-//    	xyActivity.addPoint();
+    	if(i<50)
+    	{	
+    	xyActivity.dynamicUpdate(i);
+    	i++;
+    	}	
     }
 } 
