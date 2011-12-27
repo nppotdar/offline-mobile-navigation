@@ -3,13 +3,13 @@ package com.main;
 import android.os.Handler;
 
 
-class MyThread extends Thread
+public class MyThread extends Thread
 {
 	public Handler mHandler;
 	
 	public MyThread(MyHandler myHandler)
 	{
-		mHandler=myHandler;
+		this.mHandler=myHandler;
 	}
    
 	
@@ -20,7 +20,7 @@ class MyThread extends Thread
          mHandler.sendEmptyMessage(0);
            try 
            {
-			Thread.sleep(1000);
+			Thread.sleep(5000);
 		   }
            catch (InterruptedException e) 
            {

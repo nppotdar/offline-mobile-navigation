@@ -1,22 +1,22 @@
 package com.main;
 
-import com.graph.PlotGraph;
-
 import android.os.Handler;
 import android.os.Message;
 
-class MyHandler extends Handler 
+import com.graph.XYChartBuilder;
+
+public class MyHandler extends Handler 
 { 
-	PlotGraph plotActivity;
+	XYChartBuilder xyActivity;
     
-	public MyHandler(PlotGraph cpsActivity)
+	public MyHandler(XYChartBuilder xyActivity)
 	{	
         super();
-        this.plotActivity = plotActivity;
+        this.xyActivity=xyActivity;
     }
     
     public void handleMessage(Message msg) 
     { 
-    	 plotActivity.execute(); 
+//    	xyActivity.addPoint();
     }
 } 
