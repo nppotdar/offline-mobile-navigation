@@ -1,17 +1,6 @@
-/**
- * Copyright (C) 2009, 2010 SC 4ViewSoft SRL
- *  
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *  
- *      http://www.apache.org/licenses/LICENSE-2.0
- *  
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Guide Me!
+ * By Nanga Don B)
  */
 package com.graph;
 
@@ -61,13 +50,7 @@ public class XYChartBuilder extends Activity {
 
   private String mDateFormat;
 
-  private Button mNewSeries;
 
-  private Button mAdd;
-
-  private EditText mX;
-
-  private EditText mY;
 
   private GraphicalView mChartView;
   
@@ -101,8 +84,6 @@ public class XYChartBuilder extends Activity {
     
     MyThread mThread=new MyThread(myHandler);
     setContentView(R.layout.xy_chart);
-    mX = (EditText) findViewById(R.id.xValue);
-    mY = (EditText) findViewById(R.id.yValue);
     mRenderer.setApplyBackgroundColor(true);
     mRenderer.setBackgroundColor(Color.argb(100, 50, 50, 50));
     mRenderer.setAxisTitleTextSize(16);
@@ -127,12 +108,14 @@ public class XYChartBuilder extends Activity {
         renderer.setColor(Color.CYAN);
         renderer.setFillPoints(true);
         mCurrentRenderer = renderer;
+        
         //Sachin's Goal Coordinates
         double xs = 1;
         double ys = 1;
         double xg = 35;
         double yg = 25;
         //end of Sachin's Goal Coordinates
+        
         mCurrentSeries.add(xs, ys);
         mCurrentSeries.add(xg, yg);
         mRenderer.setXAxisMin(xs-5);
@@ -144,22 +127,21 @@ public class XYChartBuilder extends Activity {
     }
     
     //code for New Series
-    mAdd = (Button) findViewById(R.id.add);
-    mNewSeries = (Button) findViewById(R.id.new_series);
-    mNewSeries.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        String seriesTitle = "Series " + (mDataset.getSeriesCount() + 1);
-        XYSeries series = new XYSeries(seriesTitle);
-        mDataset.addSeries(series);
-        mCurrentSeries = series;
-        XYSeriesRenderer renderer = new XYSeriesRenderer();
-        mRenderer.addSeriesRenderer(renderer);
-        renderer.setPointStyle(PointStyle.CIRCLE);
-        renderer.setFillPoints(true);
-        mCurrentRenderer = renderer;
-        setSeriesEnabled(true);
-      }
-    });
+//    mNewSeries = (Button) findViewById(R.id.new_series);
+//    mNewSeries.setOnClickListener(new View.OnClickListener() {
+//      public void onClick(View v) {
+//        String seriesTitle = "Series " + (mDataset.getSeriesCount() + 1);
+//        XYSeries series = new XYSeries(seriesTitle);
+//        mDataset.addSeries(series);
+//        mCurrentSeries = series;
+//        XYSeriesRenderer renderer = new XYSeriesRenderer();
+//        mRenderer.addSeriesRenderer(renderer);
+//        renderer.setPointStyle(PointStyle.CIRCLE);
+//        renderer.setFillPoints(true);
+//        mCurrentRenderer = renderer;
+//        setSeriesEnabled(true);
+//      }
+//    });
     
     
     mThread.start();
@@ -229,8 +211,7 @@ public class XYChartBuilder extends Activity {
       });
       layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT,
           LayoutParams.FILL_PARENT));
-      boolean enabled = mDataset.getSeriesCount() > 0;
-      setSeriesEnabled(enabled);
+
     } else {
       mChartView.repaint();
     }
@@ -245,9 +226,5 @@ public class XYChartBuilder extends Activity {
         e.printStackTrace();
       }
   }
-  private void setSeriesEnabled(boolean enabled) {
-    mX.setEnabled(enabled);
-    mY.setEnabled(enabled);
-    mAdd.setEnabled(enabled);
-  }
+
 }
