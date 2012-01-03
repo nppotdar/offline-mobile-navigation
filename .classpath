@@ -7,6 +7,5 @@
 	<classpathentry kind="lib" path="lib/achartengine-0.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/JavaAPIforKml.jar"/>
 	<classpathentry kind="lib" path="lib/JAXB.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/CPS"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
