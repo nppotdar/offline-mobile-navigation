@@ -32,12 +32,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.main.MyHandler;
-import com.main.MyThread;
+import com.main.UpdateHandler;
+import com.main.GraphUpdateThread;
 import com.main.R;
 
 
-public class XYChartBuilder extends Activity {
+public class GraphPlotter extends Activity {
   public static final String TYPE = "type";
 
   private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
@@ -80,9 +80,9 @@ public class XYChartBuilder extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    MyHandler myHandler=new MyHandler(this);    
+    UpdateHandler myHandler=new UpdateHandler(this);    
     
-    MyThread mThread=new MyThread(myHandler);
+    GraphUpdateThread mThread=new GraphUpdateThread(myHandler);
     setContentView(R.layout.xy_chart);
     mRenderer.setApplyBackgroundColor(true);
     mRenderer.setBackgroundColor(Color.argb(100, 50, 50, 50));
@@ -158,11 +158,11 @@ public class XYChartBuilder extends Activity {
           SeriesSelection seriesSelection = mChartView.getCurrentSeriesAndPoint();
           double[] xy = mChartView.toRealPoint(0);
           if (seriesSelection == null) {
-            Toast.makeText(XYChartBuilder.this, "No chart element was clicked", Toast.LENGTH_SHORT)
+            Toast.makeText(GraphPlotter.this, "No chart element was clicked", Toast.LENGTH_SHORT)
                 .show();
           } else {
             Toast.makeText(
-                XYChartBuilder.this,
+                GraphPlotter.this,
                 "Chart element in series index " + seriesSelection.getSeriesIndex()
                     + " data point index " + seriesSelection.getPointIndex() + " was clicked"
                     + " closest point value X=" + seriesSelection.getXValue() + ", Y=" + seriesSelection.getValue()
@@ -174,12 +174,12 @@ public class XYChartBuilder extends Activity {
         public boolean onLongClick(View v) {
           SeriesSelection seriesSelection = mChartView.getCurrentSeriesAndPoint();
           if (seriesSelection == null) {
-            Toast.makeText(XYChartBuilder.this, "No chart element was long pressed",
+            Toast.makeText(GraphPlotter.this, "No chart element was long pressed",
                 Toast.LENGTH_SHORT);
             return false; // no chart element was long pressed, so let something
             // else handle the event
           } else {
-            Toast.makeText(XYChartBuilder.this, "Chart element in series index "
+            Toast.makeText(GraphPlotter.this, "Chart element in series index "
                 + seriesSelection.getSeriesIndex() + " data point index "
                 + seriesSelection.getPointIndex() + " was long pressed", Toast.LENGTH_SHORT);
             return true; // the element was long pressed - the event has been
