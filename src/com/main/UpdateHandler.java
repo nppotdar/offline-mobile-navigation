@@ -3,13 +3,13 @@ package com.main;
 import android.os.Handler;
 import android.os.Message;
 
-import com.graph.XYChartBuilder;
+import com.graph.GraphPlotter;
 
-public class MyHandler extends Handler 
+public class UpdateHandler extends Handler 
 { 
-	XYChartBuilder xyActivity;
+	GraphPlotter xyActivity;
     int i =0;
-	public MyHandler(XYChartBuilder xyActivity)
+	public UpdateHandler(GraphPlotter xyActivity)
 	{	
         super();
         this.xyActivity=xyActivity;

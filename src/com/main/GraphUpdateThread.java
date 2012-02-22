@@ -3,11 +3,11 @@ package com.main;
 import android.os.Handler;
 
 
-public class MyThread extends Thread
+public class GraphUpdateThread extends Thread
 {
 	public Handler mHandler;
 	
-	public MyThread(MyHandler myHandler)
+	public GraphUpdateThread(UpdateHandler myHandler)
 	{
 		this.mHandler=myHandler;
 	}
