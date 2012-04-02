@@ -8,7 +8,7 @@
         android:id="@+id/stopserv"
         android:title="StopService"/>
     <item
-        android:id="@+id/gui"
-        android:title="GraphicDisplay"/>
+        android:id="@+id/textui"
+        android:title="TextDisplay"/>
     
 </menu>

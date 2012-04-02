@@ -3,7 +3,7 @@ package com.sensor;
 import android.os.Handler;
 import android.os.Message;
 
-class DelayHandler extends Handler {
+class SensorDelayHandler extends Handler {
 	MovementService movService = null;
 	public int delayType = -1;
 
@@ -13,7 +13,7 @@ class DelayHandler extends Handler {
 		public static final int DISPLAY_UPDATE = 2;
 	}
 
-	public DelayHandler(MovementService movService, int delayType) {
+	public SensorDelayHandler(MovementService movService, int delayType) {
 		super();
 		this.delayType = delayType;
 		this.movService = movService;
@@ -22,11 +22,11 @@ class DelayHandler extends Handler {
 	public void handleMessage(Message msg) {
 		switch (this.delayType) {
 
-		case DelayHandler.DelayType.CALCULATE:
+		case SensorDelayHandler.DelayType.CALCULATE:
 			movService.executeCalculation();
 			break;
 
-		case DelayHandler.DelayType.SENSOR_UPDATE:
+		case SensorDelayHandler.DelayType.SENSOR_UPDATE:
 			movService.enableSensorUpdate();
 			break;
 

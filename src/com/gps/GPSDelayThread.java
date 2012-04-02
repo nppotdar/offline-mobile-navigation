@@ -1,14 +1,14 @@
-package com.sensor;
+package com.gps;
 
 import android.os.Handler;
 
-class DelayThread extends Thread {
+class GPSDelayThread extends Thread {
 
 	private Boolean threadAlive = true;
 	public Handler mHandler;
 	public int delayTime = 1000;
 
-	public DelayThread(DelayHandler myHandler, int delayTime) {
+	public GPSDelayThread(GPSDelayHandler myHandler, int delayTime) {
 		this.mHandler = myHandler;
 		this.delayTime = delayTime;
 	}

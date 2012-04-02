@@ -1,0 +1,10 @@
+# Files to be ignored #
+
+# Folders #
+bin/*
+gen/*
+drawable-*/*.png
+
+# Compiled source #
+*.com
+*.class

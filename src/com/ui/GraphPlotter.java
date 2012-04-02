@@ -35,6 +35,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+//import com.gps.GPSService;
+import com.main.MainActivity;
 import com.main.R;
 
 import com.sensor.MotionState;
@@ -50,18 +52,18 @@ public class GraphPlotter extends Activity {
 	private XYSeriesRenderer mCurrentRenderer;
 	private String mDateFormat;
 	private GraphicalView mChartView;
-	
+
 	UpdateDelayHandler displayDelayHandler;
 	GraphUpdateDelayThread dispDelayThread;
-	
+
 	private int index = 0;
-	private int displayRefreshDelay = 250;
-	
+	private int displayRefreshDelay = 500;
+
 	// data transfer from service
 	MotionState currentState = new MotionState();
 	private float[] totDisp;
-	private int seriesIndex = 0;
-	
+	private int pointNumber = -1;
+
 	@Override
 	protected void onRestoreInstanceState(Bundle savedState) {
 		super.onRestoreInstanceState(savedState);
@@ -89,10 +91,11 @@ public class GraphPlotter extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		displayDelayHandler = new UpdateDelayHandler(this);
-		dispDelayThread = new GraphUpdateDelayThread(displayDelayHandler, displayRefreshDelay);
-		
+		dispDelayThread = new GraphUpdateDelayThread(displayDelayHandler,
+				displayRefreshDelay);
+
 		setContentView(R.layout.xy_chart);
 		mRenderer.setApplyBackgroundColor(true);
 		mRenderer.setBackgroundColor(Color.argb(100, 50, 50, 50));
@@ -147,7 +150,6 @@ public class GraphPlotter extends Activity {
 			renderer.setFillPoints(true);
 			mCurrentRenderer = renderer;
 
-			mCurrentSeries.add(0, 0);
 			mCurrentSeries.add(0, 0);
 		}
 
@@ -252,50 +254,53 @@ public class GraphPlotter extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.mainmenu, menu);
+		inflater.inflate(R.menu.guimenu, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.startserv:
-				Log.d(TAG, "onClick: Starting service");
-				startService(new Intent(this, MovementService.class));
-				break;
-			case R.id.stopserv:
-				Log.d(TAG, "onClick: Stopping service");
-				stopService(new Intent(this, MovementService.class));
-				break;
-			case R.id.stopdisp:
-				Log.d(TAG, "onClick: stopping display update");
-				dispDelayThread.stopThread();
-				break;
+		case R.id.startserv:
+			Log.d(TAG, "onClick: Starting service");
+			startService(new Intent(this, MovementService.class));
+			break;
+		case R.id.stopserv:
+			Log.d(TAG, "onClick: Stopping service");
+			stopService(new Intent(this, MovementService.class));
+			break;
+		case R.id.textui:
+			Log.d(TAG, "onClick: Switching to textui");
+			Intent x = new Intent(getApplicationContext(), MainActivity.class);
+			startActivityIfNeeded(x, Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			break;
 		}
 		return true;
 	}
 
 	public void dynamicUpdate(int i) {
-		
+
 		// Dipak and Bhumil's part to be added here.
 		currentState = MovementService.outState;
-		totDisp = MovementService.totDisp;		
-		// End
+		totDisp = MovementService.totDisp;
+		// End of Sensor Part
 
-		//seriesIndex += 1;
-		
-		XYSeries temp = mDataset.getSeriesAt(1);
-		XYSeries series = new XYSeries("Your Current Traversing Path");
-		
-		series.add(temp.getX(0), temp.getX(0));
-		//series.add(i,i);
-		series.add(totDisp[0], totDisp[1]);
-		
-		mDataset.removeSeries(1);
-		mDataset.addSeries(1, series);
+		// Incr point number (index starting at 0)
+		pointNumber += 1;
+		mCurrentSeries.add(currentState.earthDisplacement[0],
+				currentState.earthDisplacement[1]);
 
 		if (mChartView != null)
 			mChartView.repaint();
+
+		// Previous wrong code:
+		// XYSeries temp = mDataset.getSeriesAt(seriesIndex);
+		// XYSeries series = new XYSeries("Edge: " + (seriesIndex + 1));
+		// series.add(i,i);
+		// series.add(totDisp[0], totDisp[1]);
+
+		// mDataset.removeSeries(1);
+		// mDataset.addSeries(1, series);
 	}
 
 	public void saveAsImage() {

@@ -30,11 +30,11 @@ public class MovementService extends Service implements SensorEventListener{
 	private float cumulativeDisplacement[];
 	
 	
-	DelayHandler calcDelayHandler = new DelayHandler(this, DelayHandler.DelayType.CALCULATE);
-	DelayThread calcDelayThread = new DelayThread(calcDelayHandler,	calcUpdateDelay);
+	SensorDelayHandler calcDelayHandler = new SensorDelayHandler(this, SensorDelayHandler.DelayType.CALCULATE);
+	SensorDelayThread calcDelayThread = new SensorDelayThread(calcDelayHandler,	calcUpdateDelay);
 
-	DelayHandler sensDelayHandler = new DelayHandler(this, DelayHandler.DelayType.SENSOR_UPDATE);
-	DelayThread sensDelayThread = new DelayThread(sensDelayHandler,	sensUpdateDelay);
+	SensorDelayHandler sensDelayHandler = new SensorDelayHandler(this, SensorDelayHandler.DelayType.SENSOR_UPDATE);
+	SensorDelayThread sensDelayThread = new SensorDelayThread(sensDelayHandler,	sensUpdateDelay);
 	
 	// For communication only
 	public static MotionState outState = new MotionState();
@@ -123,7 +123,7 @@ public class MovementService extends Service implements SensorEventListener{
 	}
 
 	private void unregisterSensorListeners() {
-		// TODO: Code for de-register
+		// TODO: Code for unregister
 		sensorManager.unregisterListener(this);
 	}
 	
@@ -133,7 +133,7 @@ public class MovementService extends Service implements SensorEventListener{
 		Log.d(TAG, "onDestroy");
 		
 		// TODO: call function deregisterSensorListeners; close threads;
-		sensorManager.unregisterListener(this);
+		unregisterSensorListeners();
 		sensDelayThread.stopThread();
 		calcDelayThread.stopThread();
 		

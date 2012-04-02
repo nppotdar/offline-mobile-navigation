@@ -266,8 +266,9 @@ public class MotionState {
 	public void calculateVelocity(MotionState prevState, int dTime) {
 		float time = dTime * (float) 0.001;
 		for (int i = 0; i < 3; i++) {
-			this.earthVelocity[i] = prevState.earthVelocity[i]
-					+ this.earthAcceleration[i] * time;
+			this.earthVelocity[i] = prevState.earthVelocity[i] + this.earthAcceleration[i] * time;
+			//this.earthVelocity[i] = this.earthAcceleration[i] * time;
+			
 			this.earthVelocity[i] = Round(this.earthVelocity[i], 2); //Rounding off
 		}
 	}
@@ -285,8 +286,10 @@ public class MotionState {
 	public float[] calculateDisplacement(MotionState prevState, int dTime) {
 		float time = dTime * (float) 0.001;
 		for (int i = 0; i < 3; i++) {
-			this.earthDisplacement[i] = prevState.earthVelocity[i] * time
-					+ this.earthAcceleration[i] * time * time / 2;
+/*			this.earthDisplacement[i] = prevState.earthVelocity[i] * time
+					+ this.earthAcceleration[i] * time * time / 2;*/
+			this.earthDisplacement[i] = (prevState.earthVelocity[i] + this.earthVelocity[i]) * time/ (float)2 ;
+			
 			this.earthDisplacement[i] = Round (this.earthDisplacement[i], 2);
 		}
 		return earthDisplacement;

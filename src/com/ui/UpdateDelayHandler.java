@@ -1,5 +1,7 @@
 package com.ui;
 
+import com.main.MainActivity;
+
 import android.os.Handler;
 import android.os.Message;
 
@@ -16,6 +18,7 @@ public class UpdateDelayHandler extends Handler {
 	public void handleMessage(Message msg) {
 		// if (i < 50) {
 			xyActivity.dynamicUpdate(i);
+			MainActivity.display(i);
 			i++;
 		// }
 	}
