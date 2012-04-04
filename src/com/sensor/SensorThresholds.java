@@ -8,7 +8,9 @@ package com.sensor;
  *
  */
 public final class SensorThresholds {
+	
 	// Note: If you wish to disable thresholds, just set values to 0
+	public static float[] NetAcceleration = new float[4];
 	public static float Acceleration[] = new float[4];
 	public static float MagneticField[] = new float[4];
 	public static float Orientation[] = new float[4];
@@ -17,6 +19,7 @@ public final class SensorThresholds {
 	public static void initThresholds()
 	{
 		for (int i = 0; i < 3; i++) {
+			NetAcceleration[i] = (float) 0.2 ;
 			Acceleration[i] = (float) 0.2 ;
 			MagneticField[i] = (float) 0.40001;
 			Orientation[i] = (float) 0.5;

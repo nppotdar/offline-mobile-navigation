@@ -25,8 +25,9 @@ public class MotionState {
 		public static final short OrientSensor = 1;
 		public static final short MagneticSensor = 2;
 		public static final short GravitySensor = 3;
+		public static final short NetAccSensor = 4;
 
-		static boolean isLocked[] = new boolean[4];
+		static boolean isLocked[] = new boolean[5];
 
 		public static boolean lock(short sensor) {
 			try {
@@ -51,14 +52,14 @@ public class MotionState {
 				isLocked[i] = false;
 			}
 		}
-
 	}
 
 	public static int SensorReadPrecision = 1;
 	public static int OutputPrecision = 1;
 	
 	// Values w.r.t. device coordinate
-	public float devAcceleration[];
+	public float netDevAcceleration[];
+	public float devLinearAcceleration[];
 	public float devMagneticField[];
 	public float devOrientation[];
 	public float devGravity[];
@@ -72,7 +73,8 @@ public class MotionState {
 	 * Constructor. Defines members, and initialises them to zeroes.
 	 */
 	public MotionState() {
-		devAcceleration = new float[4];
+		netDevAcceleration = new float[4];
+		devLinearAcceleration = new float[4];
 		devMagneticField = new float[4];
 		devOrientation = new float[4];
 		devGravity = new float[4];
@@ -108,13 +110,25 @@ public class MotionState {
 	}
 
 	// ---------------- Setters. Getters unnecessary ----------------- //
-	public void setDevAcceleration(float[] eValues) {
+	public void setNetDevAcceleration(float[] eValues) {
+
+		if (!SensorSemaphore.isLocked[SensorSemaphore.NetAccSensor]) {
+
+			for (int i = 0; i < 3; i++) {
+				if (Math.abs(netDevAcceleration[i] - eValues[i]) > SensorThresholds.NetAcceleration[i])
+					netDevAcceleration[i] = Round(eValues[i], MotionState.SensorReadPrecision);
+			}
+			SensorSemaphore.lock(SensorSemaphore.NetAccSensor);
+		}
+	}
+	
+	public void setDevLinearAcceleration(float[] eValues) {
 
 		if (!SensorSemaphore.isLocked[SensorSemaphore.AccSensor]) {
 
 			for (int i = 0; i < 3; i++) {
-				if (Math.abs(devAcceleration[i] - eValues[i]) > SensorThresholds.Acceleration[i])
-					devAcceleration[i] = Round(eValues[i], MotionState.SensorReadPrecision);
+				if (Math.abs(devLinearAcceleration[i] - eValues[i]) > SensorThresholds.Acceleration[i])
+					devLinearAcceleration[i] = Round(eValues[i], MotionState.SensorReadPrecision);
 			}
 
 			SensorSemaphore.lock(SensorSemaphore.AccSensor);
@@ -162,7 +176,7 @@ public class MotionState {
 	 */
 	public void reset() {
 		for (int i = 0; i < 4; i++) {
-			this.devAcceleration[i] = 0;
+			this.devLinearAcceleration[i] = 0;
 			this.devMagneticField[i] = 0;
 			this.devOrientation[i] = 0;
 			this.devGravity[i] = 0;
@@ -186,7 +200,7 @@ public class MotionState {
 	public void updatePrevious(MotionState current) {
 		for (int i = 0; i < 4; i++) {
 			// previous := current
-			this.devAcceleration[i] = current.devAcceleration[i];
+			this.devLinearAcceleration[i] = current.devLinearAcceleration[i];
 			this.devMagneticField[i] = current.devMagneticField[i];
 			this.devOrientation[i] = current.devOrientation[i];
 			this.devGravity[i] = current.devGravity[i];
@@ -206,46 +220,46 @@ public class MotionState {
 	 */
 	public void calculateWorldCoordinates() {
 		
-		if (true){
+		if (false){
 			float[] R = new float[16];
 			float[] I = new float[16];		
 			
 			SensorManager.getRotationMatrix (R, I, devGravity, devMagneticField);		
-			Matrix.multiplyMV(earthAcceleration, 0, R, 0, devAcceleration, 0);
+			Matrix.multiplyMV(earthAcceleration, 0, R, 0, netDevAcceleration, 0);
 		}
 		else {
-			earthAcceleration[0] = (float) (devAcceleration[0]
+			earthAcceleration[0] = (float) (devLinearAcceleration[0]
 					* (Math.cos(devOrientation[2])
 							* Math.cos(devOrientation[0]) + Math
 							.sin(devOrientation[2])
 							* Math.sin(devOrientation[1])
 							* Math.sin(devOrientation[0]))
-					+ devAcceleration[1]
+					+ devLinearAcceleration[1]
 					* (Math.cos(devOrientation[1]) * Math
-							.sin(devOrientation[0])) + devAcceleration[2]
+							.sin(devOrientation[0])) + devLinearAcceleration[2]
 					* (-Math.sin(devOrientation[2])
 							* Math.cos(devOrientation[0]) + Math
 							.cos(devOrientation[2])
 							* Math.sin(devOrientation[1])
 							* Math.sin(devOrientation[0])));
-			earthAcceleration[1] = (float) (devAcceleration[0]
+			earthAcceleration[1] = (float) (devLinearAcceleration[0]
 					* (-Math.cos(devOrientation[2])
 							* Math.sin(devOrientation[0]) + Math
 							.sin(devOrientation[2])
 							* Math.sin(devOrientation[1])
 							* Math.cos(devOrientation[0]))
-					+ devAcceleration[1]
+					+ devLinearAcceleration[1]
 					* (Math.cos(devOrientation[1]) * Math
-							.cos(devOrientation[0])) + devAcceleration[2]
+							.cos(devOrientation[0])) + devLinearAcceleration[2]
 					* (Math.sin(devOrientation[2])
 							* Math.sin(devOrientation[0]) + Math
 							.cos(devOrientation[2])
 							* Math.sin(devOrientation[1])
 							* Math.cos(devOrientation[0])));
-			earthAcceleration[2] = (float) (devAcceleration[0]
+			earthAcceleration[2] = (float) (devLinearAcceleration[0]
 					* (Math.sin(devOrientation[2]) * Math
-							.cos(devOrientation[1])) + devAcceleration[1]
-					* (-Math.sin(devOrientation[1])) + devAcceleration[2]
+							.cos(devOrientation[1])) + devLinearAcceleration[1]
+					* (-Math.sin(devOrientation[1])) + devLinearAcceleration[2]
 					* (Math.cos(devOrientation[2]) * Math
 							.cos(devOrientation[1])));
 		}
@@ -293,6 +307,14 @@ public class MotionState {
 			this.earthDisplacement[i] = Round (this.earthDisplacement[i], 2);
 		}
 		return earthDisplacement;
+	}
+	
+	public void calculateDistance(){
+		
+	}
+	
+	public void findMotionDirection(){
+		
 	}
 	
 	public static float Round(float d, int precision){
