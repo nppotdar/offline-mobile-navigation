@@ -4,8 +4,18 @@ package com.sensor;
  */
 public class SensorDataBean {
 	// The data processed continuously from the sensors necessary for navigation
+
+	double x = 0;
+	double y = 0;
+	double z = 0;
+	SensorDataBean previous = null;
+	
 	SensorDataBean(){
 		
+	}
+	
+	public SensorDataBean update(){
+		return this;
 	}
 	
 	public int[] plotDataPoint(){
