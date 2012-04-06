@@ -3,6 +3,8 @@
  */
 package com.sensor;
 
+import java.io.File;
+
 import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -27,22 +29,24 @@ public class MovementService extends Service implements SensorEventListener {
 
 	private int calcUpdateDelay = 250;
 	private int sensUpdateDelay = 250;
-	private float cumulativeDisplacement[];
 
-	SensorDelayHandler calcDelayHandler = new SensorDelayHandler(this,
+	private SensorDelayHandler calcDelayHandler = new SensorDelayHandler(this,
 			SensorDelayHandler.DelayType.CALCULATE);
-	SensorDelayThread calcDelayThread = new SensorDelayThread(calcDelayHandler,
-			calcUpdateDelay);
+	private SensorDelayThread calcDelayThread = new SensorDelayThread(
+			calcDelayHandler, calcUpdateDelay);
 
-	SensorDelayHandler sensDelayHandler = new SensorDelayHandler(this,
+	private SensorDelayHandler sensDelayHandler = new SensorDelayHandler(this,
 			SensorDelayHandler.DelayType.SENSOR_UPDATE);
-	SensorDelayThread sensDelayThread = new SensorDelayThread(sensDelayHandler,
-			sensUpdateDelay);
+	private SensorDelayThread sensDelayThread = new SensorDelayThread(
+			sensDelayHandler, sensUpdateDelay);
 
 	// For communication only
+	private float cumulativeDisplacement[];
 	public static MotionState outState = new MotionState();
 	public static float[] totDisp = new float[3];
+	private static File outfile;
 
+	/* Overriden or implemented */
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
 	}
@@ -58,30 +62,40 @@ public class MovementService extends Service implements SensorEventListener {
 		Log.d(TAG, "onCreate");
 	}
 
-	public void executeCalculation() {
-		// display();
+	@Override
+	public void onStart(Intent intent, int startid) {
+		Toast.makeText(this, TAG + " Started", Toast.LENGTH_LONG).show();
+		Log.d(TAG, "onStart");
 
-		// Method 2: Independent calc of dist and dirn
-		//currentState.calculateDistance();
-		//currentState.findMotionDirection();
-
-		// Methood 1: Not being used
-		currentState.calculateWorldCoordinates();
-		currentState.calculateVelocity(prevState, calcUpdateDelay);
-		currentState.calculateDisplacement(prevState, calcUpdateDelay);
-
+		registerSensorListeners();
+		SensorThresholds.initThresholds();
+		
+		cumulativeDisplacement = new float[3];
 		for (int i = 0; i < 3; i++)
-			cumulativeDisplacement[i] += currentState.earthDisplacement[i];
+			cumulativeDisplacement[i] = 0;
 
-		prevState.updatePrevious(currentState);
+		prevState = new MotionState();
+		currentState = new MotionState();
 
-		MovementService.outState = currentState;
-		MovementService.totDisp = cumulativeDisplacement;
 
+
+		initFileHandling();
+
+		sensDelayThread.start();
+		calcDelayThread.start();
 	}
 
-	public void enableSensorUpdate() {
-		MotionState.SensorSemaphore.unlockAll();
+	@Override
+	public void onDestroy() {
+		Toast.makeText(this, TAG + " Stopped", Toast.LENGTH_LONG).show();
+		Log.d(TAG, "onDestroy");
+
+		// TODO: call function deregisterSensorListeners; close threads;
+		unregisterSensorListeners();
+		sensDelayThread.stopThread();
+		calcDelayThread.stopThread();
+
+		MovementService.outState.reset();
 	}
 
 	public void onSensorChanged(SensorEvent event) {
@@ -116,6 +130,36 @@ public class MovementService extends Service implements SensorEventListener {
 		}
 	}
 
+	/* Asynchronous calls by threads */
+	public void executeCalculation() {
+		// display();
+
+		// Method 2: Independent calc of dist and dirn
+		// currentState.calculateDistance();
+		// currentState.findMotionDirection();
+
+		// Methood 1: Not being use
+		currentState.calculateWorldCoordinates();
+		currentState.calculateVelocity(prevState, calcUpdateDelay);
+		currentState.calculateDisplacement(prevState, calcUpdateDelay);
+
+		for (int i = 0; i < 3; i++)
+			cumulativeDisplacement[i] += currentState.earthDisplacement[i];
+
+		prevState.updatePrevious(currentState);
+		saveToFile();
+		
+		MovementService.outState = currentState;
+		MovementService.totDisp = cumulativeDisplacement;
+
+	}
+
+	public void enableSensorUpdate() {
+		MotionState.SensorSemaphore.unlockAll();
+	}
+
+	/* Private methods */
+
 	private void registerSensorListeners() {
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -126,16 +170,15 @@ public class MovementService extends Service implements SensorEventListener {
 				.registerListener(this, sensorManager
 						.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
 						SensorManager.SENSOR_DELAY_GAME);
-		
-		sensorManager
-				.registerListener(this, sensorManager
-						.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-						SensorManager.SENSOR_DELAY_GAME);
-		
+
+		sensorManager.registerListener(this,
+				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+				SensorManager.SENSOR_DELAY_GAME);
+
 		sensorManager.registerListener(this,
 				sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
 				SensorManager.SENSOR_DELAY_GAME);
-		
+
 		sensorManager.registerListener(this,
 				sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
 				SensorManager.SENSOR_DELAY_GAME);
@@ -146,36 +189,14 @@ public class MovementService extends Service implements SensorEventListener {
 		sensorManager.unregisterListener(this);
 	}
 
-	@Override
-	public void onDestroy() {
-		Toast.makeText(this, TAG + " Stopped", Toast.LENGTH_LONG).show();
-		Log.d(TAG, "onDestroy");
-
-		// TODO: call function deregisterSensorListeners; close threads;
-		unregisterSensorListeners();
-		sensDelayThread.stopThread();
-		calcDelayThread.stopThread();
-
-		MovementService.outState.reset();
+	private boolean initFileHandling() {
+		// TODO: Only initialise file variables - Nagesh
+		return true;
 	}
-
-	@Override
-	public void onStart(Intent intent, int startid) {
-		Toast.makeText(this, TAG + " Started", Toast.LENGTH_LONG).show();
-		Log.d(TAG, "onStart");
-
-		registerSensorListeners();
-
-		cumulativeDisplacement = new float[3];
-		for (int i = 0; i < 3; i++)
-			cumulativeDisplacement[i] = 0;
-
-		prevState = new MotionState();
-		currentState = new MotionState();
-
-		SensorThresholds.initThresholds();
-
-		sensDelayThread.start();
-		calcDelayThread.start();
+	
+	private boolean saveToFile(){
+		// TODO: Code to save to file here - Nagesh
+		// what to save: currentState.earthDisplacement
+		return true;
 	}
 }

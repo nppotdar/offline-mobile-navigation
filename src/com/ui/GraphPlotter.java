@@ -285,7 +285,7 @@ public class GraphPlotter extends Activity {
 		totDisp = MovementService.totDisp;
 		// End of Sensor Part
 
-		// Incr point number (index starting at 0)
+		// Increment point number (index starting at 0)
 		pointNumber += 1;
 		mCurrentSeries.add(currentState.earthDisplacement[0],
 				currentState.earthDisplacement[1]);

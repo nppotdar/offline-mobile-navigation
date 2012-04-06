@@ -4,9 +4,16 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <TextView
+    <!-- TextView
         android:id="@+id/view"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" /-->
+
+	<com.ui.IMapView   
+    android:id="@+id/custom_drawable_view"   
+     android:layout_width="fill_parent"          
+    android:layout_height="wrap_content" 
+    height='100'
+    /> 
 
 </LinearLayout>
