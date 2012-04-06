@@ -1,5 +1,6 @@
 package com.main;
 
+import com.ui.IMapView;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,28 +8,38 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.sensor.MovementService;
-import com.ui.GraphPlotter;
+
+//import android.widget.TextView;
+//import com.ui.GraphPlotter;
 
 public class MainActivity extends Activity {
 
 	public static final String TAG = "GraphPlotter";
-	public static TextView view;
+	private IMapView imap;
+	// public static TextView view;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		imap = new IMapView(this);
 
-		view = (TextView) findViewById(R.id.view);
+		for(int i =0; i< 10; i++){
+			imap.setPoints((float) (Math.random()*500),  (float)(Math.random()*500));
+		}
+		
+		setContentView(imap);
+
+		// view = (TextView) findViewById(R.id.view);
 	}
 
-	public static void display(int i) {
-		view.setText(i + "");
-	}
+	/*
+	 * public static void display(int i) { view.setText(i + ""); }
+	 */
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -50,8 +61,9 @@ public class MainActivity extends Activity {
 			break;
 		case R.id.gui:
 			Log.d(TAG, "onClick: Switching to textui");
-			Intent x = new Intent(getApplicationContext(), GraphPlotter.class);
-			startActivityIfNeeded(x, Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			// Intent x = new Intent(getApplicationContext(),
+			// GraphPlotter.class);
+			// startActivityIfNeeded(x, Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			break;
 		}
 		return true;
