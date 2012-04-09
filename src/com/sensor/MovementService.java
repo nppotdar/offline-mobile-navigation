@@ -30,7 +30,9 @@ public class MovementService extends Service implements SensorEventListener {
 	private SensorManager sensorManager;
 	private MotionState prevState;
 	private MotionState currentState;
-
+	
+	private FileOutputStream fos= null;
+	private OutputStreamWriter osw = null;
 	private int calcUpdateDelay = 250;
 	private int sensUpdateDelay = 250;
 
@@ -196,13 +198,8 @@ public class MovementService extends Service implements SensorEventListener {
 	private boolean initFileHandling(Context context) {
 		// TODO: Only initialise file variables - Nagesh
 		try{
-		 FileOutputStream fos= null;
-		 OutputStreamWriter osw = null;
-		 fos= context.openFileOutput("lolwa.txt",Context.MODE_PRIVATE);
+		 fos= context.openFileOutput("momentService.txt",Context.MODE_APPEND);
 		 osw = new OutputStreamWriter(fos);
-		 osw.write(" ");
-		 osw.close();
-		 fos.close();
 		}catch(IOException e){
 			return false;
 		}
@@ -213,6 +210,15 @@ public class MovementService extends Service implements SensorEventListener {
 	private boolean saveToFile(){
 		// TODO: Code to save to file here - Nagesh
 		// what to save: currentState.earthDisplacement
+		try{
+			
+		//TODO: Bhumlya : write values with pipes
+		 osw.write(" ");
+		 osw.close();
+		 fos.close();
+		}catch(Exception e){
+			
+		}
 		return true;
 	}
 }

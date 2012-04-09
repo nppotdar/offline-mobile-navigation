@@ -69,8 +69,25 @@ public final class SensorThresholds {
 		
 		/*calculation bhumil*/
 		try{
-			 fis = context.openFileOutput(name, mode);
-			 osr = new OutputStreamWriter(fos);		 
+			 fos = context.openFileOutput("thresh.txt", Context.MODE_PRIVATE);
+			 osr = new OutputStreamWriter(fos);		
+			 
+			 for(int i = 0; i < 4; i++)
+				 data+=(NetAcceleration[i]+"|");
+			 data+="$";
+			 for(int i = 0; i < 4; i++)
+				 data+=(Acceleration[i]+"|");
+			 data+="$";
+			 for(int i = 0; i < 4; i++)
+				 data+=(MagneticField[i]+"|");
+			 data+="$";
+			 for(int i = 0; i < 4; i++)
+				 data+=(Orientation[i]+"|");
+			 data+="$";
+			 for(int i = 0; i < 4; i++)
+				 data+=(Gravity[i]+"|");
+			 data+="\n";
+			 
 			 osr.write(data);
 			 isr.close();
 			 fis.close();
